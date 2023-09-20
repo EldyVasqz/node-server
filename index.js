@@ -7,6 +7,7 @@ let tasklist = [
 
 
 const addTask = () => {
+    return new Promise((resolve, reject) => {
     const taskId = readline.question("Enter your task Id: ");
   const taskName = readline.question("Enter your task name: ");
 
@@ -18,9 +19,12 @@ const addTask = () => {
   tasklist.push(newTask);
   console.clear();
   mainProgram();
+  resolve("Task added successfully.");
+});
 };
 
  const deleteTask=()=>{
+    return new Promise((resolve, reject) => {
     console.log("Delete Task")
     const taskId = readline.question("Enter your task Id: ");
     const newTaskList=tasklist.filter((task)=>task.id!=taskId)
@@ -28,18 +32,20 @@ const addTask = () => {
     if (newTaskList!="")
     {
         tasklist=newTaskList
-        console.log("Your task has been deleted");
+        resolve("Your task has been deleted");
         console.clear();
         mainProgram();
     }
     else{
-        console.log("Your task has not been found");
+        reject("Your task has not been found");
     }
+});
     
 
  }
 
  const updateTask=()=>{
+    return new Promise((resolve, reject) => {
     console.log("Update Task")
     const taskId = readline.question("Enter your task Id: ");
     const index=tasklist.findIndex((task)=>task.id==taskId);
@@ -48,19 +54,18 @@ const addTask = () => {
     {
         tasklist[index].isComplete=! tasklist[index].isComplete
         
-        console.log("Your task has been updated");
+        resolve("Your task has been updated");
         console.clear();
         mainProgram();
     }
     else{
-        console.log("Your task has not been found");
+        reject("Your task has not been found");
     }
-  
-    
-
+});
  }
 
- const mainProgram=()=>{
+ const mainProgram = async () => {
+    
  console.log("Welcome to my TaskList");
  console.log(tasklist);
 
@@ -68,22 +73,28 @@ const addTask = () => {
  console.log("2. Delete a task");
  console.log("3. Update a task");
  const optionTask = readline.question("Choose an option ");
-
+ try {
  if(optionTask==1)
  {
-    addTask();
+    await addTask().then((result) => console.log(result));
  }
  else if(optionTask==2){
-    deleteTask();
+    await  deleteTask().then((result) => console.log(result));;
  }
  else if(optionTask==3){
-    updateTask();
+   await updateTask().then((result) => console.log(result));;
  }
  else {
     console.log("Wrong option")
     console.clear();
     mainProgram();
  }
+} catch (error) {
+    console.log(error);
+  } finally {
+    console.clear();
+    await mainProgram();
+  }
 
 }
 mainProgram();
